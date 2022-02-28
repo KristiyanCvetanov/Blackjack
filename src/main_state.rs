@@ -19,18 +19,18 @@ use std::io::{BufRead, Write, BufWriter};
 use std::fs::OpenOptions;
 
 const MENU_TITLE_POSITION: Point2<f32> = Point2 { x: 750.0, y: 300.0 };
-const MENU_TITLE_SIZE: f32 = 60.0;
-const MENU_PLAY_TEXT_POSITION: Point2<f32> = Point2 { x: 800.0, y: 500.0 }; 
-const MENU_PLAY_TEXT_SIZE: f32 = 40.0;
-const MENU_HELP_TEXT_POSITION: Point2<f32> = Point2 { x: 800.0, y: 700.0 };
-const MENU_HELP_TEXT_SIZE: f32 = 40.0;
+const MENU_TITLE_SIZE: f32 = 80.0;
+const MENU_PLAY_TEXT_POSITION: Point2<f32> = Point2 { x: 790.0, y: 500.0 }; 
+const MENU_PLAY_TEXT_SIZE: f32 = 60.0;
+const MENU_HELP_TEXT_POSITION: Point2<f32> = Point2 { x: 790.0, y: 700.0 };
+const MENU_HELP_TEXT_SIZE: f32 = 60.0;
 
 const HELP_TITLE_POSITION: Point2<f32> = Point2 { x: 800.0, y: 50.0 };
 const HELP_TITLE_SIZE: f32 = 60.0;
 const HELP_DESCRIPTION_POSITION: Point2<f32> = Point2 { x: 50.0, y: 200.0 };
 const HELP_DESCRIPTION_SIZE: f32 = 30.0;
 const HELP_BACK_TEXT_POSITION: Point2<f32> = Point2 { x: 1600.0, y: 800.0 };
-const HELP_BACK_TEXT_SIZE: f32 = 40.0;
+const HELP_BACK_TEXT_SIZE: f32 = 45.0;
 
 const PLAYER_SCORE_POSITION: Point2<f32> = Point2 { x: 450.0, y: 100.0 };
 const PLAYER_TEXT_SCORE_POSITION: Point2<f32> = Point2 { x: 370.0, y: 50.0 };
@@ -125,33 +125,13 @@ impl MainState {
 
         Ok(())
     }
+    
+    fn mouse_over_button(&self, mouse_position: Point2<f32>, required_position: Point2<f32>) -> bool {
+        let matches_horizontal = (mouse_position.x >= required_position.x - 10.0) 
+                                    && (mouse_position.x <= required_position.x + 170.0);
 
-    fn mouse_over_play(&self, mouse_position: Point2<f32>) -> bool {
-        let matches_horizontal = (mouse_position.x >= MENU_PLAY_TEXT_POSITION.x - 10.0) 
-                                    && (mouse_position.x <= MENU_PLAY_TEXT_POSITION.x + 120.0);
-
-        let matches_vertical = (mouse_position.y >= MENU_PLAY_TEXT_POSITION.y - 10.0) 
-                                    && (mouse_position.y <= MENU_PLAY_TEXT_POSITION.y + 50.0);
-
-        matches_horizontal && matches_vertical
-    }
-
-    fn mouse_over_help(&self, mouse_position: Point2<f32>) -> bool {
-        let matches_horizontal = (mouse_position.x >= MENU_HELP_TEXT_POSITION.x - 10.0) 
-                                    && (mouse_position.x <= MENU_HELP_TEXT_POSITION.x + 120.0);
-
-        let matches_vertical = (mouse_position.y >= MENU_HELP_TEXT_POSITION.y - 10.0) 
-                                    && (mouse_position.y <= MENU_HELP_TEXT_POSITION.y + 50.0);
-
-        matches_horizontal && matches_vertical
-    } 
-
-    fn mouse_over_back(&self, mouse_position: Point2<f32>) -> bool {
-        let matches_horizontal = (mouse_position.x >= HELP_BACK_TEXT_POSITION.x - 10.0) 
-                                    && (mouse_position.x <= HELP_BACK_TEXT_POSITION.x + 120.0);
-
-        let matches_vertical = (mouse_position.y >= HELP_BACK_TEXT_POSITION.y - 10.0) 
-                                    && (mouse_position.y <= HELP_BACK_TEXT_POSITION.y + 50.0);
+        let matches_vertical = (mouse_position.y >= required_position.y - 20.0) 
+                                    && (mouse_position.y <= required_position.y + 60.0);
 
         matches_horizontal && matches_vertical
     }
@@ -218,9 +198,9 @@ impl MainState {
         if mouse::button_pressed(ctx, mouse::MouseButton::Left) {
             let mouse_position = mouse::position(ctx);
 
-            if self.mouse_over_play(mouse_position) {
+            if self.mouse_over_button(mouse_position, MENU_PLAY_TEXT_POSITION) {
                 self.status = GameStatus::Play;
-            } else if self.mouse_over_help(mouse_position) {
+            } else if self.mouse_over_button(mouse_position, MENU_HELP_TEXT_POSITION) {
                 self.status = GameStatus::Help;
             }
         }
@@ -230,7 +210,7 @@ impl MainState {
         if mouse::button_pressed(ctx, mouse::MouseButton::Left) {
             let mouse_position = mouse::position(ctx);
 
-            if self.mouse_over_back(mouse_position) {
+            if self.mouse_over_button(mouse_position, HELP_BACK_TEXT_POSITION) {
                 self.status = GameStatus::Menu;
             }
         }
@@ -307,7 +287,7 @@ impl MainState {
     }
 
     fn draw_menu(&self, ctx: &mut Context) -> GameResult<()> {
-        let font = graphics::Font::new(ctx, "\\font\\DejaVuSerif.ttf")?;
+        let font = graphics::Font::new(ctx, "\\font\\FancyMenuFont.ttf")?;
 
         let mut title = graphics::Text::new("MENU");
         title.set_font(font, graphics::PxScale::from(MENU_TITLE_SIZE));
